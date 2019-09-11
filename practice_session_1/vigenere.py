@@ -1,13 +1,12 @@
 def create_bigrams(c):
-    # Assuming reading symbols are still in the cipher text
+    # Puts all occurring bigrams of a text in a dictionary
+    # Assumes text still contains reading symbols
     bi = dict()
     c = c.lower()
-    print(c)
     for a in range(len(c)):
         if a + 1 < len(c):
             first = c[a]
             second = c[a + 1]
-            # print(first, second, ": ", a)
             if (first, second) in bi:
                 bi[(first, second)] += 1
             else:
@@ -17,8 +16,8 @@ def create_bigrams(c):
 
 
 def top_bigrams(bi, n):
+    # Sorts a dictionary of bigrams and returns top n
     top = []
-    # print(bi)
     for k in bi:
         if not top:
             top.append((k, bi[k]))
@@ -30,6 +29,25 @@ def top_bigrams(bi, n):
             top.append((k, bi[k]))
 
     return top[:n]
+
+
+def key_length(c, bi):
+    # Attempts to find the length of a key corresponding to a vigenere cipher using
+    # the cipher text and its top occurring bigram
+    d = []
+    x = bi[0][0][0]
+    y = bi[0][0][1]
+    for i in range(len(c)):
+        if i + 1 >= len(c):
+            # End of text
+            break
+        a = c[i]
+        b = c[i + 1]
+        if a == x and b ==y:
+            # Bigram found
+            d.append(i)
+    print(d)
+    pass
 
 
 def vigenere(c):
@@ -51,4 +69,4 @@ if __name__ == "__main__":
               "Hbrpg kft Verurp rbtugi fpl sanp yh feaa bcnl ef vyc cnqogi mu eigvvph br gjv" \
               "yailndvr, xm mf grqxec ptrazxh oa kpnbrt ccj iai xgpq. Rbtugiq iaeg ccjdp fvncgdgw" \
               "bh bcnl eeg tppvorf sw bhvr efkeeik ovrwhhf."
-    print(top_bigrams(create_bigrams(lab_1_2), 10))
+    key_length(lab_1_2, top_bigrams(create_bigrams(lab_1_2), 1))
