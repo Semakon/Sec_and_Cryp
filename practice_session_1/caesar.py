@@ -32,7 +32,7 @@ def english_letter_freq():
 def letter_freq(text):
     freq = {}
     n = 0
-    for l in text.lower():
+    for l in text:
         if 97 <= ord(l) < 123:
             n += 1
             if l in freq:
