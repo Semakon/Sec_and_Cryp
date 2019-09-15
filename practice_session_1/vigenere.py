@@ -32,7 +32,7 @@ def top_bigrams(bi, n):
                     top.insert(i, (k, bi[k]))
                     break
             top.append((k, bi[k]))
-
+    print(top[:10])
     return top[:n]
 
 
@@ -40,8 +40,8 @@ def key_length(c, bi):
     # Attempts to find the length of a key corresponding to a vigenere cipher using
     # the cipher text and its top occurring bigram
     pos = []
-    x = bi[0][0][0]
-    y = bi[0][0][1]
+    x = bi[0][0]
+    y = bi[0][1]
     # Find all occurrences of the bigram
     for i in range(len(c)):
         if i + 1 >= len(c):
@@ -68,6 +68,7 @@ def key_length(c, bi):
     for i in range(len(d) - 1):
         for j in range(i + 1, len(d)):
             gcd = math.gcd(d[i], d[j])
+            # print("gcd(", d[i], ",", d[j], ") =", gcd)
             if gcd <= 3:
                 continue
             if gcd in gcds:
@@ -76,14 +77,13 @@ def key_length(c, bi):
                 gcds[gcd] = 1
             if gcds[gcd] > key_len[1]:
                 key_len = (gcd, gcds[gcd])
-                # print(key_len)
     return key_len[0]
 
 
-def freq_with_step(lang_freq, c, k):
+def freq_with_step(lang_freq, c, start, key_len):
     # Assumes c consists of only lower case letters
     new_c = []
-    for i in range(0, len(c), k):
+    for i in range(start, len(c), key_len):
         new_c += c[i]
     freq = lq(new_c)
 
@@ -95,6 +95,7 @@ def freq_with_step(lang_freq, c, k):
             minus = dist
             j = i
     print("Min: ", minus, "at", j, "->", chr(j + 97))
+    return chr(j + 97)
 
 
 def vigenere(text):
@@ -106,51 +107,86 @@ def vigenere(text):
 
     # Create
     bigrams = create_bigrams(c)
-    top_bi = top_bigrams(bigrams, 1)
-    key_len = key_length(c, top_bi)
-    eng_freq = elq()
+    top_bi = top_bigrams(bigrams, 3)
+    for j in range(3):
+        key_len = key_length(c, top_bi[j])
+        eng_freq = elq()
 
-    print("Suspected Key Length: ", key_len)
-    freq_with_step(eng_freq, c, key_len)
-    # for i in range(key_len):
-    #     freq_with_step(eng_freq, c, i + 1)
-    # pass
+        print("Suspected Key Length: ", key_len)
+        key = ""
+        for i in range(key_len):
+            key += freq_with_step(eng_freq, c, i, key_len)
+        # return key
+
+
+def encrypt_vig(plain, key):
+    # Encrypts a plain text with vigenere encryption with a key (key must only contain lower case letters)
+    if not key or len(key) < 1:
+        return plain
+    cipher = ""
+    i = 0
+    for l in plain:
+        if 97 <= ord(l) < 123:
+            k = ord(key[i]) - 97
+            new_l = chr(((ord(l) - 97 + k) % 26) + 97)
+            # print(l, "->", new_l, "(i:", i, ", k:", k, ")")
+            cipher += new_l
+            i = (i + 1) % len(key)
+        else:
+            cipher += l
+    return cipher
+
+
+def decrypt_vig(cipher, key):
+    # Decrypts a cipher text with vigenere decryption with a key (key must only contain lower case letters)
+    if not key or len(key) < 1:
+        return cipher
+    plain = ""
+    i = 0
+    for l in cipher:
+        if 97 <= ord(l) < 123:
+            k = ord(key[i])
+            new_l = chr(((ord(l) - k) % 26) + 97)
+            print(l, "->", new_l, "(i:", i, ", k:", k - 97, ")")
+            plain += new_l
+            i = (i + 1) % len(key)
+        else:
+            plain += l
+    return plain
 
 
 if __name__ == "__main__":
-    temp = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, " \
-           "there live the blind texts. Separated they live in Bookmarksgrove right at the coast of " \
-           "the Semantics, a large language ocean. A small river named Duden flows by their place " \
-           "and supplies it with the necessary regelialia. It is a paradisematic country, in which" \
-           " roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no " \
-           "control about the blind texts it is an almost unorthographic life One day however a small " \
-           "line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar." \
-           " The Big Oxmox advised her not to do so, because there were thousands of bad Commas, " \
-           "wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She " \
-           "packed her seven versalia, put her initial into the belt and made herself on the way. " \
-           "When she reached the first hills of the Italic Mountains, she had a last view back on " \
-           "the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the " \
-           "subline of her own road, the Line Lane.".lower()
-    test = ""
-    key = "key"
-    i = 0
-    for l in temp:
-        if 97 < ord(l) <= 123:
-            k = ord(key[i]) - 97
-
-            i += 1 % len(key)
-    lab_1_2 = "Auge y bxwfcxc xl wrpk shbrt eiwemsttrnwr, mg kj awtrtgu ztyseg zr xl wrpk. Rwx" \
-              "qrvyms hj pjrlvbrt vvvi bw pccjtw e pquc dk e pkgftk. Xug tfpgkrf kcmm mf erjaxh" \
-              "pkgftkxrzk. Rwx guceet fexgj rwx qrujyvx lntu rd kinf. Jmbxsag nfd peavj rd kinf" \
-              "zr bnwg eyyczi vv syrd se fvagrtg. Jfu ih guceet bx octi xl e fgtptm. Fbvy rwx" \
-              "trtjmc mlnv jccww gjv ktlwniv ycw xug flt mlnv xcil mg uymjeh xpfu iai fgtptm ana" \
-              "km raeaiv gi, uyg qkftk trqgjt llbwcb chx og rzax xb. Ukssrmai kft vmcjvpixbg vf" \
-              "bxlgbxvp iai fgtptm mf erjaxh ptpnitrnnpqxl." \
-              "Hvhwcgxrg vpntl ss eiwemsttrnwr gnp sc ttwvgi mg aeefvp ih yfg rls vea jzbt mlr" \
-              "uvagxx zgjqpzi ogkrtk se yfphx. Gvrycgl yfg r itr auktf xl e fgtptm xuck fxwif vyc" \
-              "hxgegk ktlwnivq. Iai ptpnihkecgfxv qrvyms girf emi ui fgtptm. Zntzmjl trqgjt vea" \
-              "wjc iai fcdc bxxuqu zjm hvhwcgxrg mvwh, ls gjvw rtraqk ptth rctf dmlrt’j ktlwnivq." \
-              "Hbrpg kft Verurp rbtugi fpl sanp yh feaa bcnl ef vyc cnqogi mu eigvvph br gjv" \
-              "yailndvr, xm mf grqxec ptrazxh oa kpnbrt ccj iai xgpq. Rbtugiq iaeg ccjdp fvncgdgw" \
+    lab_1_2 = "Auge y bxwfcxc xl wrpk shbrt eiwemsttrnwr, mg kj awtrtgu ztyseg zr xl wrpk. Rwx " \
+              "qrvyms hj pjrlvbrt vvvi bw pccjtw e pquc dk e pkgftk. Xug tfpgkrf kcmm mf erjaxh " \
+              "pkgftkxrzk. Rwx guceet fexgj rwx qrujyvx lntu rd kinf. Jmbxsag nfd peavj rd kinf " \
+              "zr bnwg eyyczi vv syrd se fvagrtg. Jfu ih guceet bx octi xl e fgtptm. Fbvy rwx " \
+              "trtjmc mlnv jccww gjv ktlwniv ycw xug flt mlnv xcil mg uymjeh xpfu iai fgtptm ana " \
+              "km raeaiv gi, uyg qkftk trqgjt llbwcb chx og rzax xb. Ukssrmai kft vmcjvpixbg vf " \
+              "bxlgbxvp iai fgtptm mf erjaxh ptpnitrnnpqxl. " \
+              "Hvhwcgxrg vpntl ss eiwemsttrnwr gnp sc ttwvgi mg aeefvp ih yfg rls vea jzbt mlr " \
+              "uvagxx zgjqpzi ogkrtk se yfphx. Gvrycgl yfg r itr auktf xl e fgtptm xuck fxwif vyc " \
+              "hxgegk ktlwnivq. Iai ptpnihkecgfxv qrvyms girf emi ui fgtptm. Zntzmjl trqgjt vea " \
+              "wjc iai fcdc bxxuqu zjm hvhwcgxrg mvwh, ls gjvw rtraqk ptth rctf dmlrt’j ktlwnivq. " \
+              "Hbrpg kft Verurp rbtugi fpl sanp yh feaa bcnl ef vyc cnqogi mu eigvvph br gjv " \
+              "yailndvr, xm mf grqxec ptrazxh oa kpnbrt ccj iai xgpq. Rbtugiq iaeg ccjdp fvncgdgw " \
               "bh bcnl eeg tppvorf sw bhvr efkeeik ovrwhhf."
-    vigenere(test)
+    # temp = "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, " \
+    #        "there live the blind texts. Separated they live in Bookmarksgrove right at the coast of " \
+    #        "the Semantics, a large language ocean. A small river named Duden flows by their place " \
+    #        "and supplies it with the necessary regelialia. It is a paradisematic country, in which" \
+    #        " roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no " \
+    #        "control about the blind texts it is an almost unorthographic life One day however a small " \
+    #        "line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar." \
+    #        " The Big Oxmox advised her not to do so, because there were thousands of bad Commas, " \
+    #        "wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She " \
+    #        "packed her seven versalia, put her initial into the belt and made herself on the way. " \
+    #        "When she reached the first hills of the Italic Mountains, she had a last view back on " \
+    #        "the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the " \
+    #        "subline of her own road, the Line Lane.".lower()
+    # test_key = "berig"
+    # print("Actual Key Length:", len(test_key))
+    # test = encrypt_vig(temp, test_key)
+    # print(test)
+    print(decrypt_vig(lab_1_2.lower(), "encrypt"))
+    # print(decrypt_vig(lab_1_2, vigenere(lab_1_2)))
+
