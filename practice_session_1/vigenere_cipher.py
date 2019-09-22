@@ -111,6 +111,7 @@ if __name__ == "__main__":
                  "QGNXYZLHOTQQ HM HSS CMZBXYG."
 
     possible_keys = vigenere(exercise1c)
-    print(possible_keys)
+    print("Possible keys:", possible_keys)
     for key in possible_keys:
+        print("\nResult of", key)
         print(decrypt_vig(exercise1c.lower(), key))
