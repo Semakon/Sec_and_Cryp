@@ -2,8 +2,10 @@ import math
 
 
 def english_letter_freq():
-    # Returns a dictionary of letter frequencies (in %) in the English language
-    # Source: http://pi.math.cornell.edu/~mec/2003-2004/cryptography/subs/frequencies.html
+    # Returns a dictionary of letter frequencies (in %)
+    # in the English language
+    # Source: http://pi.math.cornell.edu/~mec/2003-2004
+    # /cryptography/subs/frequencies.html
     return {
         'a': 8.2,
         'b': 1.5,
@@ -35,7 +37,8 @@ def english_letter_freq():
 
 
 def letter_freq(text):
-    # Computes the letter frequencies (in %) of a given text and returns them as a dictionary
+    # Computes the letter frequencies (in %) of a given text
+    # and returns them as a dictionary
     # Only works on lower case letters
     freq = {}
     n = 0
@@ -52,7 +55,8 @@ def letter_freq(text):
 
 
 def stat_dist(lang_freq, text_freq, k):
-    # Computes the statistical distance between letters from two dictionaries
+    # Computes the statistical distance between letters from
+    # two dictionaries
     # Only works on lower case letters
     d = 0
     for l in lang_freq:
@@ -74,7 +78,8 @@ def create_bigrams(c):
             if (first, second) in bi:
                 bi[(first, second)] += 1
             else:
-                if 97 <= ord(first) < 123 and 97 <= ord(second) < 123:
+                if 97 <= ord(first) < 123 \
+                        and 97 <= ord(second) < 123:
                     bi[(first, second)] = 1
     return bi
 
@@ -96,8 +101,9 @@ def top_bigrams(bi, n):
 
 
 def key_length(c, bi):
-    # Attempts to find the length of a key corresponding to a vigenere cipher using
-    # the cipher text and its top occurring bigram
+    # Attempts to find the length of a key corresponding
+    # to a vigenere cipher using the cipher text and its
+    # top occurring bigram
     pos = []
     x = bi[0][0]
     y = bi[0][1]

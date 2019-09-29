@@ -1,4 +1,5 @@
-from decryption_utils import create_bigrams, top_bigrams, key_length, freq_with_step
+from decryption_utils import create_bigrams, top_bigrams, \
+    key_length, freq_with_step
 from decryption_utils import english_letter_freq as elq
 
 
@@ -26,7 +27,8 @@ def vigenere(text):
 
 
 def encrypt_vig(plain, key):
-    # Encrypts a plain text with vigenere encryption with a key (key must only contain lower case letters)
+    # Encrypts a plain text with vigenere encryption with a key
+    # (key must only contain lower case letters)
     if not key or len(key) < 1:
         return plain
     cipher = ""
@@ -44,7 +46,8 @@ def encrypt_vig(plain, key):
 
 
 def decrypt_vig(cipher, key):
-    # Decrypts a cipher text with vigenere decryption with a key (key must only contain lower case letters)
+    # Decrypts a cipher text with vigenere decryption with a key
+    # (key must only contain lower case letters)
     if not key or len(key) < 1:
         return cipher
     plain = ""
